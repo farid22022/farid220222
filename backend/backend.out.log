@@ -1,0 +1,172 @@
+
+> portfolio-backend@1.0.0 dev
+> node --watch src/server.js
+
+MongoDB connected: ac-wotjcbj-shard-00-00.yn2a1td.mongodb.net
+API running on port 5000
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-00.yn2a1td.mongodb.net
+API running on port 5000
+[0mGET /api/blogs/featured [32m200[0m 505.415 ms - 2[0m
+[0mGET /api/projects/featured [32m200[0m 581.886 ms - 2[0m
+[0mGET /api/certificates/featured [32m200[0m 586.692 ms - 2[0m
+[0mGET /api/stories/featured [32m200[0m 575.436 ms - 2[0m
+[0mGET /api/blogs/featured [36m304[0m 314.324 ms - -[0m
+[0mGET /api/projects/featured [36m304[0m 297.421 ms - -[0m
+[0mGET /api/stories/featured [36m304[0m 315.489 ms - -[0m
+[0mGET /api/certificates/featured [36m304[0m 345.253 ms - -[0m
+[0mGET /api/projects [32m200[0m 323.000 ms - 2[0m
+[0mGET /api/projects [36m304[0m 431.469 ms - -[0m
+[0mGET /api/blogs [32m200[0m 410.876 ms - 2[0m
+[0mGET /api/blogs [36m304[0m 301.067 ms - Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-01.yn2a1td.mongodb.net
+API running on port 5000
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-01.yn2a1td.mongodb.net
+API running on port 5000
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-02.yn2a1td.mongodb.net
+API running on port 5000
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-01.yn2a1td.mongodb.net
+API running on port 5000
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-02.yn2a1td.mongodb.net
+API running on port 5000
+Failed running 'src/server.js'. Waiting for file changes before restarting...
+starting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-00.yn2a1td.mongodb.net
+API running on port 5000
+Restarting 'src/server.js'
+Waiting for graceful termination...
+Gracefully restarted 'src/server.js'
+Restarting 'src/server.js'
+MongoDB connected: ac-wotjcbj-shard-00-02.yn2a1td.mongodb.net
+API running on port 5000

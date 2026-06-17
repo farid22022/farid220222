@@ -1,0 +1,23 @@
+export const skills = [
+  "React",
+  "Node.js",
+  "Express",
+  "MongoDB",
+  "Mongoose",
+  "Tailwind CSS",
+  "Framer Motion",
+  "JWT Auth",
+  "Cloudinary",
+  "Python",
+  "Machine Learning",
+  "Deep Learning",
+  "CNN",
+  "Computer Vision",
+  "Data Preprocessing",
+  "CodeChef",
+  "Codeforces",
+  "LeetCode",
+  "AI Products",
+  "REST APIs",
+  "Deployment"
+];
