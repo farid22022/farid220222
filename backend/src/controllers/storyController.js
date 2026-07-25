@@ -1,12 +1,28 @@
 import Story from "../models/Story.js";
-import { normalizeArray, normalizeCustomFields } from "../utils/normalizePayload.js";
+import { collectImageUrls, linkImageMetadata, unlinkImageMetadata } from "../utils/imageMetadata.js";
+import { normalizeImageUrl, normalizeImageUrls } from "../utils/imageValidation.js";
+import { normalizeCustomFields } from "../utils/normalizePayload.js";
 
 function normalizeStoryPayload(body) {
   return {
     ...body,
-    gallery: normalizeArray(body.gallery),
+    image: normalizeImageUrl(body.image, "Story image"),
+    gallery: normalizeImageUrls(body.gallery, "Story gallery"),
     customFields: normalizeCustomFields(body.customFields)
   };
+}
+
+export async function getStoryById(req, res, next) {
+  try {
+    const story = await Story.findById(req.params.id);
+    if (!story) {
+      res.status(404);
+      throw new Error("Story not found");
+    }
+    res.json(story);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function getStories(req, res, next) {
@@ -35,6 +51,12 @@ export async function getFeaturedStories(req, res, next) {
 export async function createStory(req, res, next) {
   try {
     const story = await Story.create(normalizeStoryPayload(req.body));
+    await linkImageMetadata({
+      owner: req.admin._id,
+      entityType: "story",
+      entityId: story._id,
+      urls: collectImageUrls(story, ["image", "gallery"])
+    });
     res.status(201).json(story);
   } catch (error) {
     next(error);
@@ -51,6 +73,12 @@ export async function updateStory(req, res, next) {
       res.status(404);
       throw new Error("Story not found");
     }
+    await linkImageMetadata({
+      owner: req.admin._id,
+      entityType: "story",
+      entityId: story._id,
+      urls: collectImageUrls(story, ["image", "gallery"])
+    });
     res.json(story);
   } catch (error) {
     next(error);
@@ -64,6 +92,7 @@ export async function deleteStory(req, res, next) {
       res.status(404);
       throw new Error("Story not found");
     }
+    await unlinkImageMetadata({ owner: req.admin._id, entityType: "story", entityId: story._id });
     res.json({ message: "Story deleted" });
   } catch (error) {
     next(error);

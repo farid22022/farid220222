@@ -1,26 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import api from "../api/axiosInstance";
+import { useAuth } from "./AuthContext";
 
-const fallbackTheme = {
+export const fallbackTheme = {
   siteName: "Md. Farid Hossen Rehad",
   logo: "",
-  favicon: "",
-  primaryColor: "#ff3030",
-  secondaryColor: "#ff8a50",
-  accentColor: "#ff3434",
-  backgroundColor: "#000004",
-  textColor: "#f8fafc",
-  gradientOne: "#ff3030",
-  gradientTwo: "#ff8a50",
-  fontFamily: "Manrope",
-  earthSceneEnabled: true,
-  earthScale: 0.68,
-  earthScrollZoom: 0.72,
-  earthHorizontalDrift: 1,
-  earthRotationSpeed: 1,
-  earthGlowIntensity: 0.68,
-  earthOpacity: 0.72,
-  earthMotionFluidity: 0.08
+  favicon: ""
 };
 
 const ThemeContext = createContext(null);
@@ -30,58 +16,98 @@ function normalizeTheme(theme) {
 }
 
 function applyTheme(theme) {
-  const root = document.documentElement;
-  root.style.setProperty("--primary", theme.primaryColor);
-  root.style.setProperty("--secondary", theme.secondaryColor);
-  root.style.setProperty("--accent", theme.accentColor);
-  root.style.setProperty("--background", theme.backgroundColor);
-  root.style.setProperty("--text", theme.textColor);
-  root.style.setProperty("--gradient-one", theme.gradientOne);
-  root.style.setProperty("--gradient-two", theme.gradientTwo);
-  root.style.setProperty("--font-family", theme.fontFamily);
+  document.title = theme.siteName || fallbackTheme.siteName;
 
+  let favicon = document.querySelector("link[rel='icon']");
   if (theme.favicon) {
-    let favicon = document.querySelector("link[rel='icon']");
     if (!favicon) {
       favicon = document.createElement("link");
       favicon.rel = "icon";
       document.head.appendChild(favicon);
     }
     favicon.href = theme.favicon;
+  } else if (favicon) {
+    favicon.remove();
   }
 }
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(fallbackTheme);
-  const [loading, setLoading] = useState(true);
+function applyMode(isDark) {
+  document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+}
 
-  async function refreshTheme() {
-    try {
-      const { data } = await api.get("/theme");
-      const nextTheme = normalizeTheme(data);
-      setTheme(nextTheme);
-      applyTheme(nextTheme);
-    } catch {
-      setTheme(fallbackTheme);
-      applyTheme(fallbackTheme);
-    } finally {
-      setLoading(false);
-    }
-  }
+export function ThemeProvider({ children }) {
+  const { admin, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
+  const preferenceKey = useMemo(
+    () => ["preferences", "theme", admin?.id || admin?._id || "public"],
+    [admin]
+  );
+  const [theme, setThemeState] = useState(fallbackTheme);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("color-mode");
+    return saved !== "light";
+  });
 
   useEffect(() => {
-    refreshTheme();
+    applyMode(isDark);
+    localStorage.setItem("color-mode", isDark ? "dark" : "light");
+  }, [isDark]);
+
+  const toggleTheme = useCallback(() => setIsDark((v) => !v), []);
+
+  const query = useQuery({
+    queryKey: preferenceKey,
+    queryFn: async () => {
+      const { data } = await api.get("/preferences/theme");
+      return normalizeTheme(data);
+    },
+    enabled: !authLoading
+  });
+
+  useEffect(() => {
+    const nextTheme = normalizeTheme(query.data || fallbackTheme);
+    setThemeState(nextTheme);
+    applyTheme(nextTheme);
+  }, [query.data]);
+
+  const previewTheme = useCallback((nextTheme) => {
+    setThemeState((current) => {
+      const normalized = normalizeTheme({ ...current, ...(nextTheme || {}) });
+      applyTheme(normalized);
+      return normalized;
+    });
   }, []);
 
-  function previewTheme(nextTheme) {
-    const normalizedTheme = normalizeTheme(nextTheme);
-    setTheme(normalizedTheme);
-    applyTheme(normalizedTheme);
-  }
+  const mutation = useMutation({
+    mutationFn: async (values) => {
+      const { data } = await api.put("/preferences/theme", values);
+      return normalizeTheme(data);
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(preferenceKey, data);
+      queryClient.setQueryData(["preferences", "theme", "public"], data);
+      previewTheme(data);
+    }
+  });
+
+  const refreshTheme = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ["preferences", "theme"] }),
+    [queryClient]
+  );
 
   const value = useMemo(
-    () => ({ theme, setTheme: previewTheme, refreshTheme, loading }),
-    [theme, loading]
+    () => ({
+      theme,
+      isDark,
+      toggleTheme,
+      setTheme: previewTheme,
+      saveTheme: mutation.mutateAsync,
+      refreshTheme,
+      loading: authLoading || query.isLoading,
+      saving: mutation.isPending,
+      error: query.error || mutation.error
+    }),
+    [authLoading, isDark, mutation.error, mutation.isPending, mutation.mutateAsync, previewTheme, query.error, query.isLoading, refreshTheme, theme, toggleTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

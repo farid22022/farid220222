@@ -116,6 +116,7 @@ export default function CustomFieldsBuilder({ value, onChange }) {
                   label="Value"
                   value={field.value || []}
                   onChange={(images) => updateField(index, { value: images })}
+                  field={`custom-${index}-gallery`}
                 />
               ) : null}
             </div>

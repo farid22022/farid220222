@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { slugify } from "../utils/slugify.js";
+import { imageUrlField } from "../utils/imageValidation.js";
 import { customFieldSchema } from "./customFieldSchema.js";
 
 const projectSchema = new mongoose.Schema(
@@ -8,8 +9,8 @@ const projectSchema = new mongoose.Schema(
     slug: { type: String, unique: true, index: true },
     description: { type: String, required: true },
     shortDescription: { type: String, required: true },
-    image: { type: String, default: "" },
-    gallery: [{ type: String }],
+    image: imageUrlField,
+    gallery: [imageUrlField],
     customFields: [customFieldSchema],
     technologies: [{ type: String }],
     category: { type: String, default: "Web App" },

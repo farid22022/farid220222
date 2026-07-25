@@ -5,26 +5,32 @@
   "type": "module",
   "scripts": {
     "dev": "vite --force",
+    "prebuild": "node scripts/generate-sitemap.mjs",
     "build": "vite build",
     "deploy": "npm run build && firebase deploy --only hosting",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.0",
+    "@tiptap/extension-link": "^3.27.1",
+    "@tiptap/extension-table": "^3.27.1",
+    "@tiptap/extension-text-align": "^3.27.1",
+    "@tiptap/extension-underline": "^3.27.1",
+    "@tiptap/pm": "^3.27.1",
+    "@tiptap/react": "^3.27.1",
+    "@tiptap/starter-kit": "^3.27.1",
     "axios": "^1.15.2",
     "firebase": "^12.12.1",
-    "framer-motion": "^12.38.0",
-    "gsap": "^3.15.0",
     "lucide-react": "^1.9.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.73.1",
     "react-hot-toast": "^2.6.0",
-    "react-router-dom": "^7.14.2",
-    "three": "^0.184.0"
+    "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.11",
-    "@vitejs/plugin-react": "^5.0.2",
+    "@vitejs/plugin-react": "^5.2.0",
     "tailwindcss": "^4.1.11",
     "vite": "^7.1.4"
   }

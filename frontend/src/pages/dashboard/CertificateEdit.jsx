@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../api/axiosInstance";
+import ErrorState from "../../components/common/ErrorState";
 import Loader from "../../components/common/Loader";
 import CertificateForm from "../../components/dashboard/CertificateForm";
+import { useContentById, useUpdateContent } from "../../hooks/useContent";
 
 export default function CertificateEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => { api.get("/certificates").then(({ data }) => setItem(data.find((entry) => entry._id === id))); }, [id]);
+  const { data: item, isLoading, isError, refetch } = useContentById("certificates", id);
+  const mutation = useUpdateContent("certificates", id);
+
   async function submit(values) {
-    setLoading(true);
     try {
-      await api.put(`/certificates/${id}`, values);
+      await mutation.mutateAsync(values);
       toast.success("Certificate updated");
       navigate("/admin/certificates");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not update certificate");
     }
   }
-  if (!item) return <Loader label="Loading certificate" />;
-  return <CertificateForm initialValues={item} onSubmit={submit} loading={loading} />;
+
+  if (isLoading) return <Loader label="Loading certificate" />;
+  if (isError) return <ErrorState onRetry={refetch} />;
+  return <CertificateForm initialValues={item} onSubmit={submit} loading={mutation.isPending} />;
 }

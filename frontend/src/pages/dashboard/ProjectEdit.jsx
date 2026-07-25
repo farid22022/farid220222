@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../api/axiosInstance";
+import ErrorState from "../../components/common/ErrorState";
 import Loader from "../../components/common/Loader";
 import ProjectForm from "../../components/dashboard/ProjectForm";
+import { useContentById, useUpdateContent } from "../../hooks/useContent";
 
 export default function ProjectEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => { api.get("/projects").then(({ data }) => setItem(data.find((entry) => entry._id === id))); }, [id]);
+  const { data: item, isLoading, isError, refetch } = useContentById("projects", id);
+  const mutation = useUpdateContent("projects", id);
+
   async function submit(values) {
-    setLoading(true);
     try {
-      await api.put(`/projects/${id}`, values);
+      await mutation.mutateAsync(values);
       toast.success("Project updated");
       navigate("/admin/projects");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not update project");
     }
   }
-  if (!item) return <Loader label="Loading project" />;
-  return <ProjectForm initialValues={item} onSubmit={submit} loading={loading} />;
+
+  if (isLoading) return <Loader label="Loading project" />;
+  if (isError) return <ErrorState onRetry={refetch} />;
+  return <ProjectForm initialValues={item} onSubmit={submit} loading={mutation.isPending} />;
 }

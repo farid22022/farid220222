@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import { imageUrlField } from "../utils/imageValidation.js";
 
 const adminSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     name: { type: String, default: "Md. Farid Hossen Rehad" },
-    avatar: { type: String, default: "" },
+    avatar: imageUrlField,
     role: { type: String, default: "admin" }
   },
   { timestamps: true }

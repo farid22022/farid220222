@@ -1,21 +1,21 @@
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/axiosInstance";
 import BlogForm from "../../components/dashboard/BlogForm";
+import { useCreateContent } from "../../hooks/useContent";
 
 export default function BlogAdd() {
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const mutation = useCreateContent("blogs");
+
   async function submit(values) {
-    setLoading(true);
     try {
-      await api.post("/blogs", values);
+      await mutation.mutateAsync(values);
       toast.success("Blog created");
       navigate("/admin/blogs");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not create blog");
     }
   }
-  return <BlogForm onSubmit={submit} loading={loading} />;
+
+  return <BlogForm onSubmit={submit} loading={mutation.isPending} />;
 }

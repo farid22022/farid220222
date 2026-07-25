@@ -27,7 +27,10 @@ export function normalizeCustomFields(value) {
       const type = customFieldTypes.has(field?.type) ? field.type : "text";
       const label = String(field?.label || "").trim();
       const rawValue = field?.value;
-      const normalizedValue = type === "gallery" ? normalizeArray(rawValue) : String(rawValue || "").trim();
+      let normalizedValue;
+      if (type === "gallery") normalizedValue = normalizeImageUrls(rawValue, `${label || "Custom field"} gallery`);
+      else if (type === "image") normalizedValue = normalizeImageUrl(rawValue, label || "Custom field image");
+      else normalizedValue = String(rawValue || "").trim();
 
       return {
         label,
@@ -41,3 +44,4 @@ export function normalizeCustomFields(value) {
       return Boolean(field.value);
     });
 }
+import { normalizeImageUrl, normalizeImageUrls } from "./imageValidation.js";

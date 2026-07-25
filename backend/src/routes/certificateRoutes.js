@@ -3,6 +3,8 @@ import {
   createCertificate,
   deleteCertificate,
   getCertificates,
+  getCertificateById,
+  getCertificateBySlug,
   getFeaturedCertificates,
   updateCertificate
 } from "../controllers/certificateController.js";
@@ -12,6 +14,8 @@ const router = express.Router();
 
 router.get("/", getCertificates);
 router.get("/featured", getFeaturedCertificates);
+router.get("/id/:id", protect, getCertificateById);
+router.get("/:slug", getCertificateBySlug);
 router.post("/", protect, createCertificate);
 router.put("/:id", protect, updateCertificate);
 router.delete("/:id", protect, deleteCertificate);

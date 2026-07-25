@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../api/axiosInstance";
+import ErrorState from "../../components/common/ErrorState";
 import Loader from "../../components/common/Loader";
 import BlogForm from "../../components/dashboard/BlogForm";
+import { useContentById, useUpdateContent } from "../../hooks/useContent";
 
 export default function BlogEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => { api.get("/blogs").then(({ data }) => setItem(data.find((entry) => entry._id === id))); }, [id]);
+  const { data: item, isLoading, isError, refetch } = useContentById("blogs", id);
+  const mutation = useUpdateContent("blogs", id);
+
   async function submit(values) {
-    setLoading(true);
     try {
-      await api.put(`/blogs/${id}`, values);
+      await mutation.mutateAsync(values);
       toast.success("Blog updated");
       navigate("/admin/blogs");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not update blog");
     }
   }
-  if (!item) return <Loader label="Loading blog" />;
-  return <BlogForm initialValues={item} onSubmit={submit} loading={loading} />;
+
+  if (isLoading) return <Loader label="Loading blog" />;
+  if (isError) return <ErrorState onRetry={refetch} />;
+  return <BlogForm initialValues={item} onSubmit={submit} loading={mutation.isPending} />;
 }

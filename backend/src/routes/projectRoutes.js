@@ -3,6 +3,7 @@ import {
   createProject,
   deleteProject,
   getFeaturedProjects,
+  getProjectById,
   getProjectBySlug,
   getProjects,
   updateProject
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.get("/", getProjects);
 router.get("/featured", getFeaturedProjects);
+router.get("/id/:id", protect, getProjectById);
 router.get("/:slug", getProjectBySlug);
 router.post("/", protect, createProject);
 router.put("/:id", protect, updateProject);

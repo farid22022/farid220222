@@ -1,4 +1,6 @@
 import Admin from "../models/Admin.js";
+import { linkImageMetadata } from "../utils/imageMetadata.js";
+import { normalizeImageUrl } from "../utils/imageValidation.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export async function login(req, res, next) {
@@ -32,4 +34,28 @@ export async function me(req, res) {
 
 export async function logout(req, res) {
   res.json({ message: "Logged out" });
+}
+
+export async function updateProfile(req, res, next) {
+  try {
+    const payload = {};
+    if (req.body.name !== undefined) payload.name = String(req.body.name).trim();
+    if (req.body.avatar !== undefined) payload.avatar = normalizeImageUrl(req.body.avatar, "Profile image");
+
+    const admin = await Admin.findByIdAndUpdate(req.admin._id, payload, {
+      new: true,
+      runValidators: true
+    }).select("-password");
+
+    await linkImageMetadata({
+      owner: admin._id,
+      entityType: "profile",
+      entityId: admin._id,
+      urls: [admin.avatar]
+    });
+
+    res.json({ admin });
+  } catch (error) {
+    next(error);
+  }
 }

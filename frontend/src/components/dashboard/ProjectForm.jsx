@@ -58,7 +58,7 @@ export default function ProjectForm({ initialValues, onSubmit, loading }) {
       <Field label="Short description"><input {...register("shortDescription", { required: true })} className={inputClass} /></Field>
       <Field label="Description"><textarea {...register("description", { required: true })} rows="6" className={inputClass} /></Field>
       <ImageUploader label="Project image" value={watch("image")} onChange={(url) => setValue("image", url)} />
-      <MultiImageUploader label="Project gallery images" value={watch("gallery")} onChange={(images) => setValue("gallery", images)} />
+      <MultiImageUploader label="Project gallery images" value={watch("gallery")} onChange={(images) => setValue("gallery", images)} field="projectGallery" />
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Technologies"><input {...register("technologies")} className={inputClass} placeholder="React, Node.js" /></Field>
         <Field label="Category"><input {...register("category")} className={inputClass} /></Field>

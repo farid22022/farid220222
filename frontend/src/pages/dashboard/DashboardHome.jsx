@@ -1,24 +1,28 @@
+import { useQueries } from "@tanstack/react-query";
 import { Award, BookOpen, FolderKanban, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
 import api from "../../api/axiosInstance";
+import ErrorState from "../../components/common/ErrorState";
+import LoadingSkeleton from "../../components/common/LoadingSkeleton";
 import StatCard from "../../components/dashboard/StatCard";
 
 export default function DashboardHome() {
-  const [data, setData] = useState({ projects: [], blogs: [], certificates: [], stories: [] });
-
-  useEffect(() => {
-    Promise.allSettled([api.get("/projects"), api.get("/blogs"), api.get("/certificates"), api.get("/stories")]).then(
-      ([projects, blogs, certificates, stories]) => {
-        setData({
-          projects: projects.value?.data || [],
-          blogs: blogs.value?.data || [],
-          certificates: certificates.value?.data || [],
-          stories: stories.value?.data || []
-        });
+  const resources = ["projects", "blogs", "certificates", "stories"];
+  const results = useQueries({
+    queries: resources.map((resource) => ({
+      queryKey: [resource, "list", "all"],
+      queryFn: async () => {
+        const { data } = await api.get(`/${resource}`);
+        return data;
       }
-    );
-  }, []);
+    }))
+  });
 
+  if (results.some((result) => result.isLoading)) return <LoadingSkeleton cards={4} />;
+  if (results.some((result) => result.isError)) {
+    return <ErrorState onRetry={() => results.forEach((result) => result.refetch())} />;
+  }
+
+  const data = Object.fromEntries(resources.map((resource, index) => [resource, results[index].data || []]));
   const sections = [
     ["Recent projects", data.projects],
     ["Recent blogs", data.blogs],

@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../api/axiosInstance";
+import ErrorState from "../../components/common/ErrorState";
 import Loader from "../../components/common/Loader";
 import StoryForm from "../../components/dashboard/StoryForm";
+import { useContentById, useUpdateContent } from "../../hooks/useContent";
 
 export default function StoryEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => { api.get("/stories").then(({ data }) => setItem(data.find((entry) => entry._id === id))); }, [id]);
+  const { data: item, isLoading, isError, refetch } = useContentById("stories", id);
+  const mutation = useUpdateContent("stories", id);
+
   async function submit(values) {
-    setLoading(true);
     try {
-      await api.put(`/stories/${id}`, values);
+      await mutation.mutateAsync(values);
       toast.success("Story updated");
       navigate("/admin/stories");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not update story");
     }
   }
-  if (!item) return <Loader label="Loading story" />;
-  return <StoryForm initialValues={item} onSubmit={submit} loading={loading} />;
+
+  if (isLoading) return <Loader label="Loading story" />;
+  if (isError) return <ErrorState onRetry={refetch} />;
+  return <StoryForm initialValues={item} onSubmit={submit} loading={mutation.isPending} />;
 }

@@ -40,7 +40,7 @@ export default function StoryForm({ initialValues, onSubmit, loading }) {
         <Field label="Type"><input {...register("type")} className={inputClass} /></Field>
       </div>
       <ImageUploader label="Story image" value={watch("image")} onChange={(url) => setValue("image", url)} />
-      <MultiImageUploader label="Story gallery images" value={watch("gallery")} onChange={(images) => setValue("gallery", images)} />
+      <MultiImageUploader label="Story gallery images" value={watch("gallery")} onChange={(images) => setValue("gallery", images)} field="storyGallery" />
       <CustomFieldsBuilder value={watch("customFields")} onChange={(fields) => setValue("customFields", fields)} />
       <label className="text-sm text-white/65"><input type="checkbox" {...register("featured")} className="mr-2" />Featured</label>
     </FormShell>

@@ -1,17 +1,33 @@
 import Project from "../models/Project.js";
+import { collectImageUrls, linkImageMetadata, unlinkImageMetadata } from "../utils/imageMetadata.js";
+import { normalizeImageUrl, normalizeImageUrls } from "../utils/imageValidation.js";
 import { normalizeArray, normalizeCustomFields } from "../utils/normalizePayload.js";
 import { slugify } from "../utils/slugify.js";
 
 function normalizeProjectPayload(body) {
   return {
     ...body,
+    image: normalizeImageUrl(body.image, "Project image"),
     technologies: normalizeArray(body.technologies),
-    gallery: normalizeArray(body.gallery),
+    gallery: normalizeImageUrls(body.gallery, "Project gallery"),
     customFields: normalizeCustomFields(body.customFields),
     keyFeatures: normalizeArray(body.keyFeatures),
     mlTechniques: normalizeArray(body.mlTechniques),
     modelArchitectures: normalizeArray(body.modelArchitectures)
   };
+}
+
+export async function getProjectById(req, res, next) {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      res.status(404);
+      throw new Error("Project not found");
+    }
+    res.json(project);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function getProjects(req, res, next) {
@@ -67,6 +83,12 @@ export async function createProject(req, res, next) {
       slug: req.body.slug ? slugify(req.body.slug) : slugify(req.body.title)
     });
     const project = await Project.create(payload);
+    await linkImageMetadata({
+      owner: req.admin._id,
+      entityType: "project",
+      entityId: project._id,
+      urls: collectImageUrls(project, ["image", "gallery"])
+    });
     res.status(201).json(project);
   } catch (error) {
     next(error);
@@ -86,6 +108,12 @@ export async function updateProject(req, res, next) {
       res.status(404);
       throw new Error("Project not found");
     }
+    await linkImageMetadata({
+      owner: req.admin._id,
+      entityType: "project",
+      entityId: project._id,
+      urls: collectImageUrls(project, ["image", "gallery"])
+    });
     res.json(project);
   } catch (error) {
     next(error);
@@ -99,6 +127,7 @@ export async function deleteProject(req, res, next) {
       res.status(404);
       throw new Error("Project not found");
     }
+    await unlinkImageMetadata({ owner: req.admin._id, entityType: "project", entityId: project._id });
     res.json({ message: "Project deleted" });
   } catch (error) {
     next(error);

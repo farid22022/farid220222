@@ -3,6 +3,7 @@ import {
   createBlog,
   deleteBlog,
   getBlogBySlug,
+  getBlogById,
   getBlogs,
   getFeaturedBlogs,
   updateBlog
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.get("/", getBlogs);
 router.get("/featured", getFeaturedBlogs);
+router.get("/id/:id", protect, getBlogById);
 router.get("/:slug", getBlogBySlug);
 router.post("/", protect, createBlog);
 router.put("/:id", protect, updateBlog);

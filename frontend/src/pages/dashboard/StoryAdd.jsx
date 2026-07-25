@@ -1,21 +1,21 @@
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/axiosInstance";
 import StoryForm from "../../components/dashboard/StoryForm";
+import { useCreateContent } from "../../hooks/useContent";
 
 export default function StoryAdd() {
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const mutation = useCreateContent("stories");
+
   async function submit(values) {
-    setLoading(true);
     try {
-      await api.post("/stories", values);
+      await mutation.mutateAsync(values);
       toast.success("Story created");
       navigate("/admin/stories");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not create story");
     }
   }
-  return <StoryForm onSubmit={submit} loading={loading} />;
+
+  return <StoryForm onSubmit={submit} loading={mutation.isPending} />;
 }

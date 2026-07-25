@@ -6,19 +6,36 @@ import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import preferenceRoutes from "./routes/preferenceRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
 import themeRoutes from "./routes/themeRoutes.js";
 import textShareRoutes from "./routes/textShareRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 
 const app = express();
+const allowedOrigins = new Set([
+  "http://localhost:5173",
+  "https://faridcseku.web.app",
+  "https://faridcseku.firebaseapp.com",
+  ...(process.env.CLIENT_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+]);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || true,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
   })
 );
@@ -36,8 +53,10 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/theme", themeRoutes);
+app.use("/api/preferences", preferenceRoutes);
 app.use("/api/text-shares", textShareRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

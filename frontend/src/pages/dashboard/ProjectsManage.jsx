@@ -1,21 +1,30 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
-import api from "../../api/axiosInstance";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import ErrorState from "../../components/common/ErrorState";
+import LoadingSkeleton from "../../components/common/LoadingSkeleton";
 import DataTable from "../../components/dashboard/DataTable";
+import { useContentList, useDeleteContent } from "../../hooks/useContent";
 
 export default function ProjectsManage() {
-  const [items, setItems] = useState([]);
   const [search, setSearch] = useState("");
   const [target, setTarget] = useState(null);
-  const load = () => api.get("/projects").then(({ data }) => setItems(data));
-  useEffect(() => { load(); }, []);
+  const { data: items = [], isLoading, isError, refetch } = useContentList("projects");
+  const removeMutation = useDeleteContent("projects");
+
   async function remove() {
-    await api.delete(`/projects/${target._id}`);
-    toast.success("Project deleted");
-    setTarget(null);
-    load();
+    try {
+      await removeMutation.mutateAsync(target._id);
+      toast.success("Project deleted");
+      setTarget(null);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not delete project");
+    }
   }
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (isError) return <ErrorState onRetry={refetch} />;
+
   return (
     <>
       <DataTable title="Manage Projects" addHref="/admin/projects/add" items={items} search={search} setSearch={setSearch} onDelete={setTarget} columns={[
@@ -26,7 +35,7 @@ export default function ProjectsManage() {
         { key: "status", label: "Status" },
         { key: "featured", label: "Featured", render: (item) => item.featured ? "Yes" : "No" }
       ]} />
-      <ConfirmModal open={Boolean(target)} title="Delete project?" text="This project will be permanently removed." onCancel={() => setTarget(null)} onConfirm={remove} />
+      <ConfirmModal open={Boolean(target)} title="Delete project?" text="This project will be permanently removed." onCancel={() => setTarget(null)} onConfirm={remove} loading={removeMutation.isPending} />
     </>
   );
 }

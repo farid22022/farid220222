@@ -1,18 +1,19 @@
 import {
   Award,
   BookOpen,
-  Brush,
   X,
   FolderKanban,
   Home,
   Image,
   LogOut,
+  MessageSquare,
   Sparkles,
   User
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import AppImage from "../common/AppImage";
 
 const links = [
   ["Overview", "/admin", Home],
@@ -20,8 +21,8 @@ const links = [
   ["Blogs", "/admin/blogs", BookOpen],
   ["Certificates", "/admin/certificates", Award],
   ["Stories", "/admin/stories", Sparkles],
-  ["Theme", "/admin/theme", Brush],
-  ["Logo", "/admin/logo", Image],
+  ["Messages", "/admin/messages", MessageSquare],
+  ["Site", "/admin/logo", Image],
   ["Profile", "/admin/profile", User]
 ];
 
@@ -35,7 +36,7 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
       <aside className={`dashboard-sidebar fixed inset-y-0 left-0 z-50 w-72 border-r border-white/10 bg-black/70 p-4 backdrop-blur-xl transition-transform duration-300 lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <div className="mb-8 flex items-center gap-3">
           {theme.logo ? (
-            <img src={theme.logo} alt={theme.siteName} className="h-10 w-10 rounded-md object-cover" />
+            <AppImage src={theme.logo} alt={theme.siteName} wrapperClassName="h-10 w-10 rounded-md" className="h-full w-full object-cover" eager />
           ) : (
             <span className="grid h-10 w-10 place-items-center rounded-md bg-white text-sm font-black text-black">FR</span>
           )}

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../api/axiosInstance";
+import { queryClient } from "../query/queryClient";
 
 const AuthContext = createContext(null);
 
@@ -24,6 +25,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem("portfolio_admin_user", JSON.stringify(data.admin));
       } catch {
         setAdmin(null);
+        localStorage.removeItem("portfolio_admin_user");
       } finally {
         setLoading(false);
       }
@@ -37,6 +39,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("portfolio_admin_token", data.token);
     localStorage.setItem("portfolio_admin_user", JSON.stringify(data.admin));
     setAdmin(data.admin);
+    await queryClient.invalidateQueries({ queryKey: ["preferences"] });
     toast.success("Welcome back");
   }
 
@@ -44,11 +47,19 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("portfolio_admin_token");
     localStorage.removeItem("portfolio_admin_user");
     setAdmin(null);
+    queryClient.removeQueries({ queryKey: ["preferences"] });
     toast.success("Logged out");
   }
 
+  async function updateProfile(values) {
+    const { data } = await api.put("/auth/profile", values);
+    setAdmin(data.admin);
+    localStorage.setItem("portfolio_admin_user", JSON.stringify(data.admin));
+    return data.admin;
+  }
+
   const value = useMemo(
-    () => ({ admin, loading, isAuthenticated: Boolean(admin), login, logout }),
+    () => ({ admin, loading, isAuthenticated: Boolean(admin), login, logout, updateProfile }),
     [admin, loading]
   );
 
